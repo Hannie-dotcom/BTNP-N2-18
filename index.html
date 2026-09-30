@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 18 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 18 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 22</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 22 câu bài tập Shinkanzen N2 - Bài 18 (Trang 84 - 85)
+        const quizData = [
+            // Mục 1: ～がたい
+            {
+                q: 'これは思い出のシャツなので、( ) がたい。',
+                options: ['捨てる', '捨て', '捨てて'],
+                answer: 1,
+                grammar: 'V-ます + がたい',
+                meaning: 'Khó làm... (Khó khăn về mặt cảm xúc, tâm lý không muốn làm).',
+                trans: 'Đây là chiếc áo sơ mi kỷ niệm nên thật khó để nỡ vứt đi.'
+            },
+            {
+                q: 'うちの子供はまだ ( )。',
+                options: ['歩きがたい', '歩きにくい', '歩けない'],
+                answer: 2,
+                grammar: 'V-可能形 + ない',
+                meaning: 'Chưa có năng lực thể chất để thực hiện hành động (không dùng がたい cho khả năng thể chất).',
+                trans: 'Con nhà tôi vẫn chưa biết đi.'
+            },
+            {
+                q: 'この靴は ( )。',
+                options: ['歩きがたい', '歩きにくい', '歩けない'],
+                answer: 1,
+                grammar: 'V-ます + にくい',
+                meaning: 'Khó làm... (Chỉ sự khó khăn về mặt tính chất/cơ học của vật dụng).',
+                trans: 'Đôi giày này thật khó đi.'
+            },
+            {
+                q: 'みんなの信頼を裏切るなんて、( ) ことだ。',
+                options: ['許しがたい', '許しにくい', '許しづらい'],
+                answer: 0,
+                grammar: 'V-ます + がたい',
+                meaning: 'Khó mà... (Phản đối mãnh liệt về mặt đạo đức/tâm lý).',
+                trans: 'Việc phản bội sự tin tưởng của mọi người là điều khó mà tha thứ được.'
+            },
+            // Mục 2: ～わけにはいかない・～わけにもいかない
+            {
+                q: 'みんなが残って頑張っているのだから、わたしだけ ( ) わけにはいかない。',
+                options: ['帰る', '帰れる', '帰らない'],
+                answer: 0,
+                grammar: 'V-辞書形 + わけにはいかない',
+                meaning: 'Không thể... (Vì lý do đạo đức/chuẩn mực xã hội nên không thể làm).',
+                trans: 'Mọi người đều ở lại cố gắng nên không thể có chuyện một mình tôi đi về được.'
+            },
+            {
+                q: '( ) ので、今週末はドライブに行くわけにはいかない。',
+                options: ['急ぎの仕事を頼まれた', '天気が悪そうな', '車を持っていない'],
+                answer: 0,
+                grammar: 'V-辞書形 + わけにはいかない',
+                meaning: 'Vì có nghĩa vụ công việc nên không thể tự do đi chơi.',
+                trans: 'Vì được nhờ công việc gấp nên cuối tuần này tôi không thể đi lái xe dạo chơi được.'
+            },
+            {
+                q: '( ) ので、早く結婚したくてもするわけにはいかないんです。',
+                options: ['まだ相手がいない', '一人でいるのが好きな', 'まだ仕事が決まらない'],
+                answer: 2,
+                grammar: 'V-辞書形 + わけにはいかない',
+                meaning: 'Vì chưa ổn định công việc nên theo chuẩn mực chưa thể kết hôn.',
+                trans: 'Vì công việc vẫn chưa quyết định xong nên dù muốn kết hôn sớm tôi cũng chưa thể kết hôn được.'
+            },
+            // Mục 3: ～かねる
+            {
+                q: 'せっかくですが、この仕事は ( ) かねます。',
+                options: ['引き受ける', '引き受け', '引き受けられ'],
+                answer: 1,
+                grammar: 'V-ます + かねる',
+                meaning: 'Khó lòng mà... / Không thể... (Từ chối khéo dựa trên lập trường/điều kiện).',
+                trans: 'Rất làm tiếc nhưng công việc này tôi khó lòng mà đảm nhận được.'
+            },
+            {
+                q: '( )、こちらではお答えしかねます。',
+                options: ['この問題はとても難しくて', 'それは個人情報ですから', '質問の意味がわからないので'],
+                answer: 1,
+                grammar: 'V-ます + かねる',
+                meaning: 'Từ chối trả lời dựa trên lập trường nguyên tắc bảo mật.',
+                trans: 'Vì đó là thông tin cá nhân nên ở đây chúng tôi khó lòng mà trả lời quý khách được.'
+            },
+            {
+                q: '太郎は練習の厳しさに耐えかねて、( )。',
+                options: ['サッカー部を辞めてしまった', 'サッカー部に入りたがっている', 'サッカー部のレギュラー選手になった'],
+                answer: 0,
+                grammar: 'V-ます + かねて + Kết quả từ bỏ',
+                meaning: 'Không thể chịu đựng nổi nên dẫn tới kết quả từ bỏ.',
+                trans: 'Taro vì không thể chịu đựng nổi sự khắc nghiệt của buổi tập nên đã bỏ câu lạc bộ bóng đá.'
+            },
+            // Mục 4: ～ようがない
+            {
+                q: '東京は人が多いので、渋滞や混雑は ( ) ようがない。',
+                options: ['避ける', '避け', '避けられ'],
+                answer: 1,
+                grammar: 'V-ます + ようがない',
+                meaning: 'Không có cách nào để... / Hoàn toàn không thể.',
+                trans: 'Tokyo rất đông người nên kẹt xe và ùn tắc hoàn toàn không có cách nào tránh khỏi.'
+            },
+            {
+                q: '日本語の勉強を始めたばかりのトムさんには ( ) だろう。',
+                options: ['難しい漢字は書けない', '難しい漢字の書きようがない', '難しい漢字を書けようがない'],
+                answer: 0,
+                grammar: 'V-可能形 + ない',
+                meaning: 'Chỉ khả năng chưa học được (chưa có tri thức), không dùng ようがない.',
+                trans: 'Đối với anh Tom mới bắt đầu học tiếng Nhật thì chắc là chưa viết được chữ Hán khó đâu.'
+            },
+            {
+                q: 'おいしそうなお弁当だったけど、( ) ので、食べようがなかった。',
+                options: ['はしもスプーンもなかった', 'おなかが痛かった', '時間がなかった'],
+                answer: 0,
+                grammar: 'V-ます + ようがない',
+                meaning: 'Hoàn toàn thiếu phương tiện/cách thức (không có đũa thìa) nên không thể ăn.',
+                trans: 'Hộp cơm trọ trông rất ngon nhưng vì không có đũa lẫn thìa nên hoàn toàn không có cách nào ăn được.'
+            },
+            // Mục 5: ～どころではない
+            {
+                q: '趣味はスキーだが、去年はずっと忙しくて、スキーに ( ) どころではなかった。',
+                options: ['行く', '行ける', '行った'],
+                answer: 0,
+                grammar: 'V-辞書形 + どころではない',
+                meaning: 'Không phải lúc / Không trong điều kiện hoàn cảnh để làm B.',
+                trans: 'Sở thích của tôi là trượt tuyết, nhưng năm ngoái suốt ngày bận rộn nên hoàn toàn không trong hoàn cảnh đi trượt tuyết được.'
+            },
+            {
+                q: '( )、仕事どころではない。',
+                options: ['内容が難しくて', '熱があって', '給料が安くて'],
+                answer: 1,
+                grammar: 'N / Trạng thái thể chất + どころではない',
+                meaning: 'Vì bị sốt nên thể trạng không thể làm việc được.',
+                trans: 'Vì tôi đang bị sốt nên tâm trí đâu mà làm việc được nữa.'
+            },
+            {
+                q: '( )、この本を読むどころではなかった。',
+                options: ['来客があって', '字が小さくて', '眼鏡がなくて'],
+                answer: 0,
+                grammar: 'Sự việc gián đoạn + どころではない',
+                meaning: 'Vì có khách đến nên hoàn toàn không thể tập trung đọc sách.',
+                trans: 'Vì có khách đến nhà nên tôi đâu còn thời gian mà đọc cuốn sách này.'
+            },
+            {
+                q: 'のどが痛くて、( ) どころではない。',
+                options: ['カラオケで歌う', '小さい声を出す', '薬を飲む'],
+                answer: 0,
+                grammar: 'V-辞書形 + どころではない',
+                meaning: 'Họng đau nên không thể hát hò karaoke.',
+                trans: 'Cổ họng tôi đau đến mức đâu còn hát hò karaoke được nữa.'
+            },
+            // Mục 6: ～得る／～得ない
+            {
+                q: '危機はチャンスにも ( ) 得る。',
+                options: ['なる', 'なり', 'なれ'],
+                answer: 1,
+                grammar: 'V-ます + 得る (える/うる)',
+                meaning: 'Có khả năng / Có thể xảy ra.',
+                trans: 'Nguy cơ hoàn toàn có thể trở thành cơ hội.'
+            },
+            {
+                q: 'どんな場合でも事故は ( )。',
+                options: ['起これる', '起こることができる', '起こり得る'],
+                answer: 2,
+                grammar: 'V-ます + 得る',
+                meaning: 'Tai nạn có khả năng xảy ra trong bất kỳ trường hợp nào.',
+                trans: 'Trong bất kỳ trường hợp nào thì tai nạn cũng có thể xảy ra.'
+            },
+            {
+                q: 'この子はまだ ( )。',
+                options: ['字を読み得ない', '字が読めない', '字を読むことができ得ない'],
+                answer: 1,
+                grammar: 'V-可能形 + ない',
+                meaning: 'Khả năng cá nhân trẻ nhỏ chưa biết đọc chữ (không dùng 得ない cho khả năng cá nhân).',
+                trans: 'Đứa trẻ này vẫn chưa biết đọc chữ.'
+            },
+            // Mục 1~6: Bài tập tổng hợp
+            {
+                q: '風邪を引いたので、学校に ( )。',
+                options: ['行けません', '行きかねます', '行きがたいです'],
+                answer: 0,
+                grammar: 'V-可能形 + ません',
+                meaning: 'Lý do bị ốm thông thường dùng dạng phủ định khả năng bình thường.',
+                trans: 'Vì bị cảm nên tôi không thể đến trường được.'
+            },
+            {
+                q: '夜遅くなり、わたしは子供の帰りを ( )、駅まで迎えに行った。',
+                options: ['待ち得なくて', '待ちようがなくて', '待ちかねて'],
+                answer: 2,
+                grammar: 'V-ます + かねて',
+                meaning: 'Không thể kiên nhẫn chờ thêm được nữa nên đi đón.',
+                trans: 'Trời đã muộn mà không thể kiên nhẫn chờ con về được nữa, tôi đã ra tận ga để đón.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
